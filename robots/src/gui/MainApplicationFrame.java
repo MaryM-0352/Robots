@@ -5,9 +5,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -43,6 +40,9 @@ public class MainApplicationFrame extends JFrame {
         gameWindow.setName("game");
         gameWindow.setIcon(saving.setIcon(gameWindow));
         addWindow(gameWindow);
+        gameWindow.positionWindow.setName("position");
+        gameWindow.positionWindow.setIcon(saving.setIcon(gameWindow.positionWindow));
+        addWindow(gameWindow.positionWindow);
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -57,6 +57,7 @@ public class MainApplicationFrame extends JFrame {
                     saving.save(e.getWindow(), false);
                     saving.save(gameWindow, gameWindow.isIcon());
                     saving.save(logWindow, logWindow.isIcon());
+                    saving.save(gameWindow.positionWindow, gameWindow.positionWindow.isIcon());
                     saving.write();
                     e.getWindow().dispose();
                     System.exit(0);
