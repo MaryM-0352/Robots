@@ -46,7 +46,7 @@ public class MainApplicationFrame extends JFrame {
                 );
                 if (answer == JOptionPane.YES_OPTION){
                     e.getWindow().dispose();
-                    System.exit(0);
+                    setDefaultCloseOperation(EXIT_ON_CLOSE);
                 }
 
             }
