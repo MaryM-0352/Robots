@@ -59,7 +59,7 @@ public class MainApplicationFrame extends JFrame {
                     saving.save(logWindow, logWindow.isIcon());
                     saving.write();
                     e.getWindow().dispose();
-                    System.exit(0);
+                    setDefaultCloseOperation(EXIT_ON_CLOSE);
                 }
 
             }
