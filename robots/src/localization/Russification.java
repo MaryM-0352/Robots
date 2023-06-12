@@ -1,4 +1,4 @@
-package gui;
+package localization;
 
 import javax.swing.*;
 import java.util.Locale;

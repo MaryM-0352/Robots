@@ -15,6 +15,7 @@ import log.Logger;
  */
 public class MainApplicationFrame extends JFrame {
     private final JDesktopPane desktopPane = new JDesktopPane();
+    private final RobotModel robotModel = new RobotModel();
 
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
@@ -32,11 +33,15 @@ public class MainApplicationFrame extends JFrame {
         restorer.restoreState(logWindow, "logWindowComponent");
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
+        GameWindow gameWindow = new GameWindow(robotModel);
         gameWindow.setSize(400, 400);
-        gameWindow.setName("game");
         restorer.restoreState(gameWindow, "gameWindowComponent");
         addWindow(gameWindow);
+
+        PositionWindow positionWindow = new PositionWindow(robotModel);
+        restorer.restoreState(positionWindow, "positionWindowComponent");
+        addWindow(positionWindow);
+
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -51,8 +56,9 @@ public class MainApplicationFrame extends JFrame {
                     WindowStateKeeper.Saver saver = new WindowStateKeeper.Saver();
                     saver.save(gameWindow, "gameWindowComponent");
                     saver.save(logWindow, "logWindowComponent");
+                    saver.save(positionWindow, "positionWindowComponent");
                     saver.write();
-                    e.getWindow().dispose();
+                    MainApplicationFrame.this.dispose();
                     setDefaultCloseOperation(EXIT_ON_CLOSE);
                 }
 

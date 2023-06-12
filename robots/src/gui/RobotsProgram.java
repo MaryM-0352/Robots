@@ -1,9 +1,7 @@
 package gui;
 
+import localization.Russification;
 import java.awt.Frame;
-import java.beans.PropertyVetoException;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
