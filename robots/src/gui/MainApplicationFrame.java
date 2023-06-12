@@ -3,8 +3,6 @@ package gui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyVetoException;
-import java.io.FileNotFoundException;
 
 import javax.swing.*;
 
@@ -17,8 +15,9 @@ import log.Logger;
  */
 public class MainApplicationFrame extends JFrame {
     private final JDesktopPane desktopPane = new JDesktopPane();
+    private final RobotModel robotModel = new RobotModel();
 
-    public MainApplicationFrame() throws FileNotFoundException, PropertyVetoException {
+    public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
         int inset = 50;
@@ -26,23 +25,23 @@ public class MainApplicationFrame extends JFrame {
         setBounds(inset, inset,
                 screenSize.width - inset * 2,
                 screenSize.height - inset * 2);
-        WindowRestorer saving = new WindowRestorer();
+        WindowStateKeeper.Restorer restorer = new WindowStateKeeper.Restorer();
 
         setContentPane(desktopPane);
 
         LogWindow logWindow = createLogWindow();
-        logWindow.setName("log");
-        logWindow.setIcon(saving.setIcon(logWindow));
+        restorer.restoreState(logWindow, "logWindowComponent");
         addWindow(logWindow);
 
-        GameWindow gameWindow = new GameWindow();
+        GameWindow gameWindow = new GameWindow(robotModel);
         gameWindow.setSize(400, 400);
-        gameWindow.setName("game");
-        gameWindow.setIcon(saving.setIcon(gameWindow));
+        restorer.restoreState(gameWindow, "gameWindowComponent");
         addWindow(gameWindow);
-        gameWindow.positionWindow.setName("position");
-        gameWindow.positionWindow.setIcon(saving.setIcon(gameWindow.positionWindow));
-        addWindow(gameWindow.positionWindow);
+
+        PositionWindow positionWindow = new PositionWindow(robotModel);
+        restorer.restoreState(positionWindow, "positionWindowComponent");
+        addWindow(positionWindow);
+
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -54,13 +53,13 @@ public class MainApplicationFrame extends JFrame {
                         JOptionPane.QUESTION_MESSAGE
                 );
                 if (answer == JOptionPane.YES_OPTION){
-                    saving.save(e.getWindow(), false);
-                    saving.save(gameWindow, gameWindow.isIcon());
-                    saving.save(logWindow, logWindow.isIcon());
-                    saving.save(gameWindow.positionWindow, gameWindow.positionWindow.isIcon());
-                    saving.write();
-                    e.getWindow().dispose();
-                    System.exit(0);
+                    WindowStateKeeper.Saver saver = new WindowStateKeeper.Saver();
+                    saver.save(gameWindow, "gameWindowComponent");
+                    saver.save(logWindow, "logWindowComponent");
+                    saver.save(positionWindow, "positionWindowComponent");
+                    saver.write();
+                    MainApplicationFrame.this.dispose();
+                    setDefaultCloseOperation(EXIT_ON_CLOSE);
                 }
 
             }

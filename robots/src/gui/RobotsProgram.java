@@ -1,8 +1,7 @@
 package gui;
 
+import localization.Russification;
 import java.awt.Frame;
-import java.beans.PropertyVetoException;
-import java.io.FileNotFoundException;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -21,11 +20,7 @@ public class RobotsProgram
     }
     SwingUtilities.invokeLater(() -> {
       MainApplicationFrame frame = null;
-      try {
-        frame = new MainApplicationFrame();
-      } catch (FileNotFoundException | PropertyVetoException e) {
-        throw new RuntimeException(e);
-      }
+      frame = new MainApplicationFrame();
       frame.pack();
       frame.setVisible(true);
       frame.setExtendedState(Frame.MAXIMIZED_BOTH);
