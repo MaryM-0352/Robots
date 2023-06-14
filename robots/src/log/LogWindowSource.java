@@ -53,8 +53,8 @@ public class LogWindowSource
             if (size() < m_iQueueLength){
                 m_messages.add(entry);
             } else {
-                m_messages.clear();
                 Iterable<LogEntry> iterator = range(size() - m_iQueueLength, size());
+                m_messages.clear();
                 iterator.forEach(m_messages::add);
             }
         }
