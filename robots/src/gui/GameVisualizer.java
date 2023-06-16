@@ -6,12 +6,14 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 
-public class GameVisualizer extends JPanel
+public class GameVisualizer extends JPanel implements Observer
 {
     private final Timer m_timer = initTimer();
     private final RobotModel m_robotModel;
@@ -25,14 +27,7 @@ public class GameVisualizer extends JPanel
     public GameVisualizer(RobotModel robotModel)
     {
         m_robotModel = robotModel;
-        m_timer.schedule(new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                onRedrawEvent();
-            }
-        }, 0, 50);
+        m_robotModel.addObserver(this);
         m_timer.schedule(new TimerTask()
         {
             @Override
@@ -57,7 +52,7 @@ public class GameVisualizer extends JPanel
     {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g; 
-        drawRobot(g2d, MathUtils.round(m_robotModel.getRobotPositionX()), MathUtils.round(m_robotModel.getRobotPositionY()), m_robotModel.getRobotDirection());
+        drawRobot(g2d);
         drawTarget(g2d, m_robotModel.getTargetPositionX(), m_robotModel.getTargetPositionY());
     }
 
@@ -66,28 +61,41 @@ public class GameVisualizer extends JPanel
         EventQueue.invokeLater(this::repaint);
     }
 
-    private void drawRobot(Graphics2D g, int robotCenterX, int robotCenterY, double direction)
+    private void drawRobot(Graphics2D g)
     {
-        AffineTransform t = AffineTransform.getRotateInstance(direction, robotCenterX, robotCenterY);
-        g.setTransform(t);
-        g.setColor(Color.MAGENTA);
-        fillOval(g, robotCenterX, robotCenterY, 30, 10);
-        g.setColor(Color.BLACK);
-        drawOval(g, robotCenterX, robotCenterY, 30, 10);
-        g.setColor(Color.WHITE);
-        fillOval(g, robotCenterX  + 10, robotCenterY, 5, 5);
-        g.setColor(Color.BLACK);
-        drawOval(g, robotCenterX  + 10, robotCenterY, 5, 5);
+        int robotCenterX = MathUtils.round(m_robotModel.getRobotPositionX());
+        int robotCenterY = MathUtils.round(m_robotModel.getRobotPositionY());
+        int robotDirection = MathUtils.round(m_robotModel.getRobotDirection());
+        g = (Graphics2D) g.create();
+        try {
+            AffineTransform t = AffineTransform.getRotateInstance(robotDirection, robotCenterX, robotCenterY);
+            g.setTransform(t);
+            g.setColor(Color.MAGENTA);
+            fillOval(g, robotCenterX, robotCenterY, 30, 10);
+            g.setColor(Color.BLACK);
+            drawOval(g, robotCenterX, robotCenterY, 30, 10);
+            g.setColor(Color.WHITE);
+            fillOval(g, robotCenterX  + 10, robotCenterY, 5, 5);
+            g.setColor(Color.BLACK);
+            drawOval(g, robotCenterX  + 10, robotCenterY, 5, 5);
+        } finally {
+            g.dispose();
+        }
     }
 
     private void drawTarget(Graphics2D g, int x, int y)
     {
-        AffineTransform t = AffineTransform.getRotateInstance(0, 0, 0); 
-        g.setTransform(t);
-        g.setColor(Color.GREEN);
-        fillOval(g, x, y, 5, 5);
-        g.setColor(Color.BLACK);
-        drawOval(g, x, y, 5, 5);
+        g = (Graphics2D) g.create();
+        try {
+            AffineTransform t = AffineTransform.getRotateInstance(0, 0, 0);
+            g.setTransform(t);
+            g.setColor(Color.GREEN);
+            fillOval(g, x, y, 5, 5);
+            g.setColor(Color.BLACK);
+            drawOval(g, x, y, 5, 5);
+        } finally {
+          g.dispose();
+        }
     }
     private static void fillOval(Graphics g, int centerX, int centerY, int diam1, int diam2)
     {
@@ -96,5 +104,11 @@ public class GameVisualizer extends JPanel
     private static void drawOval(Graphics g, int centerX, int centerY, int diam1, int diam2)
     {
         g.drawOval(centerX - diam1 / 2, centerY - diam2 / 2, diam1, diam2);
+    }
+
+    @Override
+    public void update(Observable o, Object key) {
+        if (RobotModel.ROBOT_POSITION_CHANGED == key)
+            EventQueue.invokeLater(this::onRedrawEvent);
     }
 }

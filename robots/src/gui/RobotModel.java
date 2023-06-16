@@ -17,6 +17,7 @@ public class RobotModel extends Observable {
     private static final double maxAngularVelocity = 0.001;
     private double currentX;
     private double currentY;
+    public static final String ROBOT_POSITION_CHANGED = "position changed";
     protected void onModelUpdateEvent()
     {
         double distance = MathUtils.distance(m_targetPositionX, m_targetPositionY,
@@ -38,6 +39,7 @@ public class RobotModel extends Observable {
         }
         if (Math.abs(angleToTarget - m_robotDirection) > Math.PI){
             angularVelocity = -angularVelocity;
+            velocity = -maxVelocity;
         }
         moveRobot(velocity, angularVelocity, 10);
     }
@@ -71,7 +73,7 @@ public class RobotModel extends Observable {
         currentX = robotPositionX;
         currentY = robotPositionY;
         setChanged();
-        notifyObservers();
+        notifyObservers(ROBOT_POSITION_CHANGED);
         clearChanged();
     }
     protected void setTargetPosition(Point p)

@@ -59,7 +59,6 @@ public class MainApplicationFrame extends JFrame {
                     saver.save(positionWindow, "positionWindowComponent");
                     saver.write();
                     MainApplicationFrame.this.dispose();
-                    setDefaultCloseOperation(EXIT_ON_CLOSE);
                 }
 
             }
