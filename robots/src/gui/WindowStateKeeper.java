@@ -9,29 +9,50 @@ public class WindowStateKeeper {
     private static Properties properties;
     private static final String filename = "config.properties";
     private static File config;
+    private static final Restorer restorer = new Restorer();
+
+    public static void restoreState(Savable component) {
+        restorer.restoreState((JInternalFrame) component, component.getIdentification());
+    }
+
     public static class Saver {
         Saver(){
             properties = new Properties();
         }
-        public void save(JInternalFrame c, String key){
-            String position = String.format("%d,%d,%d,%d", c.getX(), c.getY(), c.getWidth(), c.getHeight());
+        public void save(Savable c){
+            JInternalFrame window = (JInternalFrame) c;
+            String key = c.getIdentification();
+            String position = String.format("%d,%d,%d,%d", window.getX(), window.getY(), window.getWidth(), window.getHeight());
             properties.put(key, position);
-            properties.put(key + ".is_icon", "" + c.isIcon());
+            properties.put(key + ".is_icon", "" + window.isIcon());
         }
 
-        public void write() {
+        public void write(JFrame frame) {
             FileOutputStream os = null;
             try {
                 os = new FileOutputStream(filename);
                 properties.store(os, "Windows");
-            } catch (IOException ignored) {}
+            } catch (IOException ex) {
+                int answer = JOptionPane.showConfirmDialog(
+                        frame,
+                        "Ошибка записи! Вы точно хотите выйти?",
+                        "Окно подтверждения",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+                if (answer == JOptionPane.NO_OPTION){
+                    write(frame);
+                }
+            }
         }
     }
 
-    public static class Restorer {
+    private static class Restorer {
+        private static boolean isLoad;
         Restorer() {
             config = new File(filename);
             properties = new Properties();
+            isLoad = false;
         }
 
         public void restoreState(JInternalFrame component, String key) {
@@ -51,22 +72,28 @@ public class WindowStateKeeper {
                 if (Objects.equals(iconKey, "true"))
                     try {
                         component.setIcon(true);
-                    } catch (PropertyVetoException ignored) {}
+                    } catch (PropertyVetoException ignored) {
+                        //полностью контролируемая передача параметра, недопустимые значения невозможны
+                    }
                 else {
                     try {
                         component.setIcon(false);
-                    } catch (PropertyVetoException ignored) {}
+                    } catch (PropertyVetoException ignored) {
+                        //полностью контролируемая передача параметра, недопустимые значения невозможны
+                    }
                 }
             }
         }
 
         private void loadProperties() {
-            InputStream is = null;
-            try {
-                is = new FileInputStream(config);
-                properties.load(is);
-            } catch (IOException ignored) {}
+            if (!isLoad){
+                InputStream is = null;
+                try {
+                    is = new FileInputStream(config);
+                    properties.load(is);
+                    isLoad = true;
+                } catch (IOException ignored) {}
+            }
         }
     }
 }
-

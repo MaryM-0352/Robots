@@ -24,18 +24,16 @@ public class MainApplicationFrame extends JFrame {
         setBounds(inset, inset,
                 screenSize.width - inset * 2,
                 screenSize.height - inset * 2);
-        WindowStateKeeper.Restorer restorer = new WindowStateKeeper.Restorer();
 
         setContentPane(desktopPane);
 
         LogWindow logWindow = createLogWindow();
-        restorer.restoreState(logWindow, "logWindowComponent");
+        WindowStateKeeper.restoreState(logWindow);
         addWindow(logWindow);
 
         GameWindow gameWindow = new GameWindow();
         gameWindow.setSize(400, 400);
-        gameWindow.setName("game");
-        restorer.restoreState(gameWindow, "gameWindowComponent");
+        WindowStateKeeper.restoreState(gameWindow);
         addWindow(gameWindow);
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -49,10 +47,10 @@ public class MainApplicationFrame extends JFrame {
                 );
                 if (answer == JOptionPane.YES_OPTION){
                     WindowStateKeeper.Saver saver = new WindowStateKeeper.Saver();
-                    saver.save(gameWindow, "gameWindowComponent");
-                    saver.save(logWindow, "logWindowComponent");
-                    saver.write();
-                    e.getWindow().dispose();
+                    saver.save(gameWindow);
+                    saver.save(logWindow);
+                    saver.write(MainApplicationFrame.this);
+                    MainApplicationFrame.this.dispose();
                     setDefaultCloseOperation(EXIT_ON_CLOSE);
                 }
 
