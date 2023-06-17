@@ -1,8 +1,7 @@
 
 package gui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -38,15 +37,15 @@ public class MainApplicationFrame extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 int answer = JOptionPane.showConfirmDialog(
-                        desktopPane,
+                        MainApplicationFrame.this,
                         "Уверены, что хотите выйти из игры?",
                         "Окно подтверждения",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE
                 );
                 if (answer == JOptionPane.YES_OPTION){
-                    e.getWindow().dispose();
-                    setDefaultCloseOperation(EXIT_ON_CLOSE);
+                    MainApplicationFrame.this.setVisible(false);
+                    MainApplicationFrame.this.dispose();
                 }
 
             }
