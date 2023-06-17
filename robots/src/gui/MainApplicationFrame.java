@@ -49,9 +49,11 @@ public class MainApplicationFrame extends JFrame {
                     WindowStateKeeper.Saver saver = new WindowStateKeeper.Saver();
                     saver.save(gameWindow);
                     saver.save(logWindow);
-                    saver.write(MainApplicationFrame.this);
-                    MainApplicationFrame.this.dispose();
-                    setDefaultCloseOperation(EXIT_ON_CLOSE);
+                    int operationCode = saver.write(MainApplicationFrame.this);
+                    if (operationCode == 0) {
+                        MainApplicationFrame.this.dispose();
+                        setDefaultCloseOperation(EXIT_ON_CLOSE);
+                    }
                 }
 
             }

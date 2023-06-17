@@ -1,6 +1,7 @@
 package gui;
 
 import javax.swing.*;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
 import java.io.*;
 import java.util.*;
@@ -27,7 +28,7 @@ public class WindowStateKeeper {
             properties.put(key + ".is_icon", "" + window.isIcon());
         }
 
-        public void write(JFrame frame) {
+        public int write(JFrame frame) {
             FileOutputStream os = null;
             try {
                 os = new FileOutputStream(filename);
@@ -41,9 +42,10 @@ public class WindowStateKeeper {
                         JOptionPane.QUESTION_MESSAGE
                 );
                 if (answer == JOptionPane.NO_OPTION){
-                    write(frame);
+                    return -1;
                 }
             }
+            return 0;
         }
     }
 
