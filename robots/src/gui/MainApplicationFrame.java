@@ -1,8 +1,7 @@
 
 package gui;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -29,10 +28,12 @@ public class MainApplicationFrame extends JFrame {
         setContentPane(desktopPane);
 
         LogWindow logWindow = createLogWindow();
+        WindowStateKeeper.restoreState(logWindow);
         addWindow(logWindow);
 
         GameWindow gameWindow = new GameWindow();
         gameWindow.setSize(400, 400);
+        WindowStateKeeper.restoreState(gameWindow);
         addWindow(gameWindow);
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -45,8 +46,14 @@ public class MainApplicationFrame extends JFrame {
                         JOptionPane.QUESTION_MESSAGE
                 );
                 if (answer == JOptionPane.YES_OPTION){
-                    e.getWindow().dispose();
-                    setDefaultCloseOperation(EXIT_ON_CLOSE);
+                    WindowStateKeeper.Saver saver = new WindowStateKeeper.Saver();
+                    saver.save(gameWindow);
+                    saver.save(logWindow);
+                    int operationCode = saver.write(MainApplicationFrame.this);
+                    if (operationCode == 0) {
+                        MainApplicationFrame.this.dispose();
+                        setDefaultCloseOperation(EXIT_ON_CLOSE);
+                    }
                 }
 
             }

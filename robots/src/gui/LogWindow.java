@@ -11,10 +11,11 @@ import log.LogChangeListener;
 import log.LogEntry;
 import log.LogWindowSource;
 
-public class LogWindow extends JInternalFrame implements LogChangeListener
+public class LogWindow extends JInternalFrame implements LogChangeListener, Savable
 {
     private LogWindowSource m_logSource;
     private TextArea m_logContent;
+    private static final String id = "logWindowComponent";
 
     public LogWindow(LogWindowSource logSource) 
     {
@@ -46,5 +47,10 @@ public class LogWindow extends JInternalFrame implements LogChangeListener
     public void onLogChanged()
     {
         EventQueue.invokeLater(this::updateLogContent);
+    }
+
+    @Override
+    public String getIdentification() {
+        return id;
     }
 }
